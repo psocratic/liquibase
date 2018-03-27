@@ -28,6 +28,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.xml.bind.DatatypeConverter;
 
 @LiquibaseService(skip = true)
 public class MissingDataExternalFileChangeGenerator extends MissingDataChangeGenerator {
@@ -104,6 +105,8 @@ public class MissingDataExternalFileChangeGenerator extends MissingDataChangeGen
                             dataTypes[i] = "BOOLEAN";
                         } else if (value instanceof Date) {
                             dataTypes[i] = "DATE";
+                        } else if (value instanceof byte[]) {
+                            dataTypes[i] = "COMPUTED";
                         } else {
                             dataTypes[i] = "STRING";
                         }
@@ -113,6 +116,8 @@ public class MissingDataExternalFileChangeGenerator extends MissingDataChangeGen
                     } else {
                         if (value instanceof Date) {
                             line[i] = new ISODateFormat().format(((Date) value));
+                        } else if (value instanceof byte[]) {
+                            line[i] = "UNHEX('" + DatatypeConverter.printHexBinary((byte[])value).toLowerCase() + "')";
                         } else {
                             line[i] = value.toString();
                         }

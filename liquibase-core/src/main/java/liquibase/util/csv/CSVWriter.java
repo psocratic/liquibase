@@ -1,5 +1,8 @@
 package liquibase.util.csv;
 
+import liquibase.configuration.GlobalConfiguration;
+import liquibase.configuration.LiquibaseConfiguration;
+
 import liquibase.util.ISODateFormat;
 
 import java.io.IOException;
@@ -7,6 +10,7 @@ import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 
 public class CSVWriter extends liquibase.util.csv.opencsv.CSVWriter {
     private static final ISODateFormat ISO_DATE_FORMAT = new ISODateFormat();
@@ -51,6 +55,8 @@ public class CSVWriter extends liquibase.util.csv.opencsv.CSVWriter {
             return ISO_DATE_FORMAT.format((java.sql.Timestamp) value);
 //        } else if (value instanceof oracle.sql.TIMESTAMP) {
 //            return ISO_DATE_FORMAT.format((oracle.sql.TIMESTAMP) value);
+        } else if(value instanceof byte[]) {
+            return "UNHEX(" + new String((byte[]) value, LiquibaseConfiguration.getInstance().getConfiguration(GlobalConfiguration.class).getOutputEncoding()) + ")";
         } else {
             return value.toString();
         }
